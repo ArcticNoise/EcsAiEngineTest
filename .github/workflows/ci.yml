@@ -20,6 +20,9 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y xorg-dev python3-jinja2
 
+      - name: Install Python dependencies
+        run: python -m pip install jinja2
+
       - name: Cache CMake deps
         uses: actions/cache@v3
         with:
