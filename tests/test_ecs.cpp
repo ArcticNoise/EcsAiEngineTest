@@ -45,3 +45,22 @@ TEST_CASE("one-frame components are cleared") {
   world.clearOneFrame();
   REQUIRE_FALSE(world.has<EventComponent>(e));
 }
+
+TEST_CASE("remove component") {
+  ecs::World world;
+  auto e = world.createEntity();
+  world.add<PositionComponent>(e, PositionComponent{1});
+  world.remove<PositionComponent>(e);
+  REQUIRE_FALSE(world.has<PositionComponent>(e));
+}
+
+TEST_CASE("const iteration") {
+  ecs::World world;
+  auto e = world.createEntity();
+  world.add<PositionComponent>(e, PositionComponent{4});
+  const ecs::World &cworld = world;
+  int sum = 0;
+  cworld.each<PositionComponent>(
+      [&](ecs::Entity /*ent*/, const PositionComponent &p) { sum += p.value; });
+  REQUIRE(sum == 4);
+}
