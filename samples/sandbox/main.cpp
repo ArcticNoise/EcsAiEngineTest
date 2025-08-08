@@ -1,12 +1,6 @@
+#include "engine/render/gl/shader.hpp"
 #include "engine/runtime/runtime.hpp"
 #include <glad/gl.h>
-
-static GLuint createShader(GLenum type, const char *src) {
-  GLuint shader = glCreateShader(type);
-  glShaderSource(shader, 1, &src, nullptr);
-  glCompileShader(shader);
-  return shader;
-}
 
 int main() {
   engine::Runtime app;
@@ -33,14 +27,18 @@ int main() {
     }
   )";
 
-  GLuint vs = createShader(GL_VERTEX_SHADER, vsSrc);
-  GLuint fs = createShader(GL_FRAGMENT_SHADER, fsSrc);
-  GLuint program = glCreateProgram();
-  glAttachShader(program, vs);
-  glAttachShader(program, fs);
-  glLinkProgram(program);
-  glDeleteShader(vs);
-  glDeleteShader(fs);
+  engine::render::gl::Shader vs(GL_VERTEX_SHADER);
+  engine::render::gl::Shader fs(GL_FRAGMENT_SHADER);
+  if (!vs.compile(vsSrc) || !fs.compile(fsSrc)) {
+    return -1;
+  }
+
+  engine::render::gl::Program program;
+  program.attach(vs);
+  program.attach(fs);
+  if (!program.link()) {
+    return -1;
+  }
 
   float vertices[] = {
       // positions       // colors
@@ -61,7 +59,7 @@ int main() {
   while (app.tick()) {
     glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(program);
+    program.use();
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glfwSwapBuffers(app.window());
@@ -69,6 +67,5 @@ int main() {
 
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
-  glDeleteProgram(program);
   return 0;
 }
