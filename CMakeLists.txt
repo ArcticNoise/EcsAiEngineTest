@@ -76,6 +76,7 @@ endif()
 
 add_library(engine_core
   engine/src/runtime/runtime.cpp
+  engine/src/ecs/world.cpp
 )
 target_include_directories(engine_core PUBLIC engine/include)
 target_link_libraries(engine_core PUBLIC glm glad glfw)
@@ -84,7 +85,7 @@ add_executable(sandbox samples/sandbox/main.cpp)
 target_link_libraries(sandbox PRIVATE engine_core)
 
 if(USE_CATCH2)
-  add_executable(engine_tests tests/test_dummy.cpp)
+  add_executable(engine_tests tests/test_dummy.cpp tests/test_ecs.cpp)
   target_link_libraries(engine_tests PRIVATE engine_core Catch2::Catch2WithMain)
   include(CTest)
   add_test(NAME engine_tests COMMAND engine_tests)
