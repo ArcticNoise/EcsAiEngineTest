@@ -81,8 +81,14 @@ add_library(engine_core
 target_include_directories(engine_core PUBLIC engine/include)
 target_link_libraries(engine_core PUBLIC glm glad glfw)
 
+add_library(engine_render_gl
+  engine/src/render/gl/shader.cpp
+)
+target_include_directories(engine_render_gl PUBLIC engine/include)
+target_link_libraries(engine_render_gl PUBLIC glad)
+
 add_executable(sandbox samples/sandbox/main.cpp)
-target_link_libraries(sandbox PRIVATE engine_core)
+target_link_libraries(sandbox PRIVATE engine_core engine_render_gl)
 
 if(USE_CATCH2)
   add_executable(engine_tests tests/test_dummy.cpp tests/test_ecs.cpp)
