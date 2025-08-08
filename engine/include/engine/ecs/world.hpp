@@ -21,6 +21,7 @@ public:
   template <class T> void remove(Entity e) noexcept;
 
   template <class T0, class... Ts, class Fn> void each(Fn &&fn);
+  template <class T0, class... Ts, class Fn> void each(Fn &&fn) const;
 
   template <class T> void markOneFrame();
   void clearOneFrame();
@@ -145,6 +146,19 @@ template <class T> void World::remove(Entity e) noexcept {
 
 template <class T0, class... Ts, class Fn> void World::each(Fn &&fn) {
   auto *primary = storage<T0>();
+  for (std::size_t i = 0; i < primary->dense.size(); ++i) {
+    EntityHandle id = primary->dense[i];
+    Entity ent{id, generations_[id]};
+    if ((has<Ts>(ent) && ...)) {
+      fn(ent, primary->data[i], get<Ts>(ent)...);
+    }
+  }
+}
+
+template <class T0, class... Ts, class Fn> void World::each(Fn &&fn) const {
+  auto const *primary = storage<T0>();
+  if (!primary)
+    return;
   for (std::size_t i = 0; i < primary->dense.size(); ++i) {
     EntityHandle id = primary->dense[i];
     Entity ent{id, generations_[id]};
