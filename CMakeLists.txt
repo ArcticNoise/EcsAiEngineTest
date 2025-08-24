@@ -81,10 +81,11 @@ add_library(engine_core
 target_include_directories(engine_core PUBLIC engine/include)
 target_link_libraries(engine_core PUBLIC glm glad glfw)
 
-add_library(engine_render_gl
-  engine/src/render/gl/shader.cpp
-  engine/src/render/gl/buffer.cpp
-)
+  add_library(engine_render_gl
+    engine/src/render/gl/shader.cpp
+    engine/src/render/gl/buffer.cpp
+    engine/src/render/gl/vertex_array.cpp
+  )
 target_include_directories(engine_render_gl PUBLIC engine/include)
 target_link_libraries(engine_render_gl PUBLIC glad)
 

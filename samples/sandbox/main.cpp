@@ -1,4 +1,6 @@
+#include "engine/render/gl/buffer.hpp"
 #include "engine/render/gl/shader.hpp"
+#include "engine/render/gl/vertex_array.hpp"
 #include "engine/runtime/runtime.hpp"
 #include <glad/gl.h>
 
@@ -45,12 +47,11 @@ int main() {
       -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, -0.5f, 0.0f,
       0.0f,  1.0f,  0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f,  1.0f,
   };
-  GLuint vao = 0, vbo = 0;
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  engine::render::gl::VertexArray vao;
+  engine::render::gl::Buffer vbo(GL_ARRAY_BUFFER);
+  vao.bind();
+  vbo.bind();
+  vbo.setData(vertices, sizeof(vertices), GL_STATIC_DRAW);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
@@ -60,12 +61,10 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     program.use();
-    glBindVertexArray(vao);
+    vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glfwSwapBuffers(app.window());
   }
 
-  glDeleteVertexArrays(1, &vao);
-  glDeleteBuffers(1, &vbo);
   return 0;
 }
